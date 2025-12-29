@@ -19,16 +19,15 @@
   },
   "peerDependencies": {
     "react": ">=16",
-    "redux": ">=4"
+    "redux": ">=4",
+    "reselect": "^5.1.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",
     "@types/react": "^19.0.0",
     "redux": "^5.0.0",
+    "reselect": "^5.1.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "reselect": "^5.1.1"
   }
 }

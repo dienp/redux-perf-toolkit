@@ -2,7 +2,15 @@
 
 A powerful, developer-centric toolkit designed to **track, measure, and optimize** Redux application performance with zero-config automated naming.
 
-![Redux Performance Dashboard](https://raw.githubusercontent.com/dienp/redux-perf-toolkit/master/assets/dashboard-preview.png) *(Placeholder for dashboard screenshot)*
+---
+
+## 📺 Live Demo
+
+Watch the Redux Performance Toolkit in action, automatically identifying slow selectors and providing real-time insights:
+
+![Redux Performance Dashboard Demo](assets/demo.webp)
+
+---
 
 ## ✨ Key Features
 
@@ -11,7 +19,7 @@ A powerful, developer-centric toolkit designed to **track, measure, and optimize
     - **Execution Time**
     - **Cache Misses vs Hits**
     - **Invalidating Dependency Index** (Know exactly *which* input caused the recomputation!)
-- 🏷️ **Automated Naming**: Variables names (e.g., `const selectUser = createSelector(...)`) are automatically captured using a build-time plugin. No manual naming required!
+- 🏷️ **Automated Naming**: Variable names (e.g., `const selectUser = createSelector(...)`) are automatically captured using a build-time Vite plugin. No manual naming required!
 - 📊 **Real-time Dashboard**: A sleek MUI-based overlay to monitor your slowest actions and selectors in real-time.
 - 📱 **Cross-Platform**: Support for both **Web** (React) and **React Native**.
 - 🛠️ **Developer Experience**: Styled console warnings for "Slow Selectors" and "Slow Actions" that exceed your defined thresholds.
@@ -26,6 +34,12 @@ To use the core performance tracking logic:
 npm install @dienp/redux-perf-core
 ```
 
+To enable **Automated Naming** in Vite projects:
+
+```bash
+npm install @dienp/redux-perf-vite-plugin
+```
+
 For React Native applications:
 
 ```bash
@@ -36,7 +50,20 @@ npm install @dienp/redux-perf-react-native
 
 ## 🚀 Quick Start
 
-### 1. Configure the Middleware
+### 1. Configure the Vite Plugin (Optional but Recommended)
+Enable automated selector naming in your `vite.config.ts`:
+
+```typescript
+import { reduxPerfPlugin } from '@dienp/redux-perf-vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    reduxPerfPlugin()
+  ]
+});
+```
+
+### 2. Configure the Middleware
 Add the performance middleware to your Redux store:
 
 ```typescript
@@ -49,7 +76,7 @@ export const store = configureStore({
 });
 ```
 
-### 2. Instrumented Selectors
+### 3. Instrumented Selectors
 Swap your imports to use the performance-aware `createSelector`.
 
 ```typescript
@@ -65,7 +92,7 @@ export const selectFilteredItems = createSelector(
 );
 ```
 
-### 3. Mount the Dashboard
+### 4. Mount the Dashboard
 Add the debugging UI to your root component:
 
 ```tsx
@@ -101,6 +128,7 @@ setPerfOptions({
 ## 🏗️ Monorepo Structure
 
 - `packages/core`: The core performance logic, EventBus, and Web dashboard.
+- `packages/vite-plugin`: Build-time instrumentation for automated selector naming.
 - `packages/react-native`: Specialized UI components for mobile performance tracking.
 - `examples/stress-test`: A heavy implementation demo with 10,000+ items and artificial delays to test the toolkit.
 

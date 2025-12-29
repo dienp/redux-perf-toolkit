@@ -272,38 +272,17 @@ export const createSelector = (...args: any[]) => {
 };
 
 // Alias for backward compatibility if needed, but createSelector is the main one now
-export const createPerfSelector = (name: string, ...args: any[]) => {
-    // Manually push name into options ??
-    // Or just treat it as createSelector but ignore name arg logic?
-    // Let's just forward to createSelector but set the name property on the function if possible,
-    // or wrap it. 
-    // Simpler: Just rely on createSelector's auto-naming or pass name in options?
-    // But existing code passes name as 1st arg.
-
-    // Let's just patch the name inference.
-    // If we call createSelector with a named function, it works.
-
-    // We can't easily perform the "name as first arg" translation to "options object" 
-    // because variable args are hard.
-
-    // Let's keep a simple wrapper that forces the name.
-    // but we can't easily force the name into the closure of createSelector...
-
-    // Okay, hacky but effective: 
-    // define a combiner with the checks? NO.
-
-    // Re-implement createPerfSelector to use the same internal logic but explicit name.
-    return createSelector(...args, { memoizeOptions: { name } });
-    // Wait, we aren't using memoizeOptions to pass name. We closed over 'name' in createSelector.
-    // BUT createPerfSelector calls createSelector?
-
-    // Let's just copy-paste the logic for createPerfSelector because I am lazy and it's safer.
-    // Actually, createPerfSelector IS deprecated by my seamless createSelector.
-    // But I must support it for the existing code in HeavyList if I hadn't already switched it.
-    // I DID switch usage in HeavyList.
-
-    // I'll leave a stub or just remove it if possible? 
-    // I should support it.
-
-    return createSelector(...args); // It will auto-name mostly.
+export const createPerfSelector = (nameOrCombiner: any, ...args: any[]) => {
+    if (typeof nameOrCombiner === 'string') {
+        const name = nameOrCombiner;
+        // If args[args.length-1] is already options, merge it.
+        const lastArg = args[args.length - 1];
+        if (lastArg && typeof lastArg === 'object' && !Array.isArray(lastArg) && typeof lastArg !== 'function') {
+            // @ts-ignore
+            lastArg.name = name;
+            return createSelector(...args);
+        }
+        return createSelector(...args, { name });
+    }
+    return createSelector(nameOrCombiner, ...args);
 };

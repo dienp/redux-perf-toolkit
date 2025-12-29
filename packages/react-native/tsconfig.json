@@ -9,7 +9,13 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "node",
-        "jsx": "react-native"
+        "jsx": "react-native",
+        "baseUrl": ".",
+        "paths": {
+            "@dienp/redux-perf-core": [
+                "../core/src/index.ts"
+            ]
+        }
     },
     "include": [
         "src"
