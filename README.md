@@ -160,6 +160,7 @@ For a deep dive into how each technical component works, check out our specializ
 - 🏎️ [Action Profiling](docs/actions.md): How we measure reducer execution time.
 - 🎯 [Selector Tracking](docs/selectors.md): Deep dive into recomputation detection and dependency tracking.
 - 📦 [Store Size Measurement](docs/store-size.md): How we track memory footprint and state bloat.
+- 🤖 [AI Integration Prompt](docs/integration-prompt.md): Use this prompt to let an AI assistant do the integration for you!
 
 ---
 
@@ -174,6 +175,12 @@ For a deep dive into how each technical component works, check out our specializ
 ## 👷‍♂️ CI/CD
 
 This project uses **GitHub Actions** for automated builds, NPM publishing to GitHub Packages, and deployment of the Stress Test Lab to GitHub Pages.
+
+---
+
+## 🤖 AI Generated Disclaimer
+
+This entire repository, including the core logic, build plugins, example applications, unit tests, and documentation, was **fully generated and verified by Antigravity**, an agentic AI coding assistant. Every line of code has been autonomously implemented and tested to ensure functionality and performance.
 
 ---
 

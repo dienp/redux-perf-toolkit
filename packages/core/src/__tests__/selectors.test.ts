@@ -12,7 +12,7 @@ describe('createSelector Performance Tracking', () => {
     it('should compute result correctly', () => {
         const selectA = (state: any) => state.a;
         const selectB = (state: any) => state.b;
-        const selector = createSelector([selectA, selectB], (a, b) => a + b);
+        const selector = createSelector([selectA, selectB], (a: any, b: any) => a + b);
 
         const state = { a: 1, b: 2 };
         expect(selector(state)).toBe(3);
@@ -21,7 +21,7 @@ describe('createSelector Performance Tracking', () => {
     it('should emit redux-perf-selector event on recomputation', () => {
         const emitSpy = vi.spyOn(perfEventBus, 'emit');
         const selectA = (state: any) => state.a;
-        const selector = createSelector([selectA], (a) => a * 2);
+        const selector = createSelector([selectA], (a: any) => a * 2);
 
         // First run (recomputation)
         selector({ a: 1 });
@@ -41,7 +41,7 @@ describe('createSelector Performance Tracking', () => {
         const emitSpy = vi.spyOn(perfEventBus, 'emit');
         const selectA = (state: any) => state.a;
         const selectB = (state: any) => state.b;
-        const selector = createSelector([selectA, selectB], (a, b) => a + b);
+        const selector = createSelector([selectA, selectB], (a: any, b: any) => a + b);
 
         // Initial run
         selector({ a: 1, b: 10 });
@@ -58,7 +58,7 @@ describe('createSelector Performance Tracking', () => {
     it('should support named selectors via options', () => {
         const emitSpy = vi.spyOn(perfEventBus, 'emit');
         const selectA = (state: any) => state.a;
-        const selector = createSelector([selectA], (a) => a, { name: 'MyCoolSelector' });
+        const selector = createSelector([selectA], (a: any) => a, { name: 'MyCoolSelector' });
 
         selector({ a: 1 });
         expect(emitSpy).toHaveBeenCalledWith('redux-perf-selector', expect.objectContaining({
