@@ -1,41 +1,92 @@
 # 🚀 Redux Performance Toolkit
 
-A powerful, developer-centric toolkit designed to **track, measure, and optimize** Redux application performance with zero-config automated naming. Now 100% pure TypeScript and platform-agnostic.
+**Identify and eliminate Redux performance bottlenecks with zero-config monitoring.**
+
+A pure TypeScript toolkit that tracks selector recomputations, action dispatch times, and store memory usage—helping you optimize Redux applications across web, Node.js, and React Native.
 
 ---
 
-## 🏗️ Pure TypeScript & Platform Agnostic
+## 🎯 The Problem
 
-The `@dynlabs/redux-perf-core` package has been completely revamped to be dependency-free (no React/React Native required). It works seamlessly in:
-- 🌐 **Web** (React, Vue, Angular, Vanilla)
-- 🖥️ **Node.js** (Server-side Redux)
-- 📱 **Mobile** (React Native, Expo)
+Redux applications can suffer from performance issues that are difficult to diagnose:
 
----
+- **🐌 Slow Selectors**: Expensive computations running on every render, even when data hasn't changed
+- **🔄 Unnecessary Recomputations**: Selectors recalculating when their inputs are identical
+- **⏱️ Action Bottlenecks**: Reducers taking too long to process actions, blocking the UI
+- **💾 Memory Bloat**: Store growing unbounded, consuming excessive RAM
+- **🔍 Lack of Visibility**: No easy way to identify which selectors or actions are causing problems
 
-## ✨ Key Features
-
-- 🏎️ **Action Profiling**: Track exactly how long each reducer takes to process actions.
-- 🎯 **Seamless Selector Tracking**: Drop-in `createSelector` replacement that automatically detects execution time and cache hits/misses.
-- 📦 **Store Size Measurement**: Real-time tracking of your Redux state size with configurable high-RAM warnings.
-- 📊 **Console Analytics**: A powerful analytics engine reachable via `perfAnalytics.logSummary()`, providing Top 10 reporting for:
-    - Most triggered actions/selectors
-    - Slowest operations (Max duration)
-    - Heaviest operations (Cumulative time)
-- 🏷️ **Automated Naming**: Variable names are automatically captured using a build-time Vite plugin.
-- ⏹️ **On-Demand Control**: Start, stop, or reset tracking at any time to focus on specific user flows.
+Traditional profiling tools show *symptoms* but don't pinpoint the *Redux-specific* root causes.
 
 ---
 
-## 📦 Installation
+## ✨ The Solution
 
-To use the core performance tracking logic:
+Redux Performance Toolkit provides **automatic, zero-config monitoring** with:
+
+✅ **Drop-in Replacement**: Works with existing `reselect` selectors—no code changes required  
+✅ **Real-Time Alerts**: Console warnings when selectors/actions exceed configurable thresholds  
+✅ **Detailed Analytics**: Top 10 reports for slowest operations, most frequent calls, and cumulative time  
+✅ **Memory Tracking**: Monitor Redux store size with automatic high-RAM warnings  
+✅ **Platform Agnostic**: Pure TypeScript—works in React, Vue, Angular, Node.js, and React Native  
+✅ **Build-Time Naming**: Vite plugin automatically captures selector names for readable reports
+
+---
+
+## 📦 Packages
+
+### `@dynlabs/redux-perf-core`
+
+The core monitoring engine. Provides middleware for action profiling and a drop-in `createSelector` replacement for tracking selector performance.
+
+**Key APIs:**
+
+```typescript
+// Middleware for action profiling and store size tracking
+createPerfMiddleware()
+
+// Drop-in replacement for reselect's createSelector
+createSelector(selectors, combiner, options?)
+
+// Analytics dashboard
+perfAnalytics.logSummary()
+perfAnalytics.startTracking()
+perfAnalytics.stopTracking()
+perfAnalytics.reset()
+
+// Configuration
+setPerfOptions({
+  selectorTrackingEnabled: boolean,
+  slowSelectorThreshold: number,        // ms
+  storeSizeTrackingEnabled: boolean,
+  maxStoreSizeThreshold: number         // MB
+})
+```
+
+### `@dynlabs/redux-perf-vite-plugin`
+
+Vite plugin for automatic selector naming and optional `reselect` import aliasing.
+
+**Key APIs:**
+
+```typescript
+reduxPerfPlugin({
+  rewriteReselect: boolean,    // Auto-alias 'reselect' to '@dynlabs/redux-perf-core'
+  corePath: string             // Custom path to core package
+})
+```
+
+---
+
+## 🚀 Installation
+
+### 1. Install Core Package
 
 ```bash
 npm install @dynlabs/redux-perf-core
 ```
 
-To enable **Automated Naming** in Vite projects:
+### 2. (Optional) Install Vite Plugin for Auto-Naming
 
 ```bash
 npm install @dynlabs/redux-perf-vite-plugin
@@ -43,23 +94,26 @@ npm install @dynlabs/redux-perf-vite-plugin
 
 ---
 
-## 🚀 Quick Start
+## 📖 Quick Start
 
-### 1. Configure the Vite Plugin (Optional but Recommended)
-Enable automated selector naming in your `vite.config.ts`:
+### Step 1: Configure Vite Plugin (Optional but Recommended)
+
+Add to `vite.config.ts`:
 
 ```typescript
+import { defineConfig } from 'vite';
 import { reduxPerfPlugin } from '@dynlabs/redux-perf-vite-plugin';
 
 export default defineConfig({
   plugins: [
-    reduxPerfPlugin()
+    reduxPerfPlugin({
+      rewriteReselect: true  // Automatically alias 'reselect' imports
+    })
   ]
 });
 ```
 
-### 2. Configure the Middleware
-Add the performance middleware to your Redux store:
+### Step 2: Add Middleware to Store
 
 ```typescript
 import { configureStore } from '@reduxjs/toolkit';
@@ -67,15 +121,13 @@ import { createPerfMiddleware } from '@dynlabs/redux-perf-core';
 
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefault) => getDefault().concat(createPerfMiddleware()),
+  middleware: (getDefault) => getDefault().concat(createPerfMiddleware())
 });
 ```
 
-### 3. Instrumented Selectors
-Swap your imports to use the performance-aware `createSelector`.
+### Step 3: Use Performance-Aware Selectors
 
 ```typescript
-// After (Drop-in replacement with auto-tracking!)
 import { createSelector } from '@dynlabs/redux-perf-core';
 
 export const selectFilteredItems = createSelector(
@@ -84,106 +136,126 @@ export const selectFilteredItems = createSelector(
 );
 ```
 
-### 4. View Analytics
+### Step 4: View Analytics
+
 ```typescript
 import { perfAnalytics } from '@dynlabs/redux-perf-core';
 
-// Log the Top 10 tables to console
+// Open console and call:
 perfAnalytics.logSummary();
-
-// Manage tracking on-demand
-perfAnalytics.stopTracking();
-perfAnalytics.reset();
-perfAnalytics.startTracking();
 ```
 
 ---
 
-## 🖥️ Console Output Examples
+## 📊 Example Output
 
-The toolkit provides high-visibility console outputs to help you identify bottlenecks instantly.
+### Real-Time Warnings
 
-### ⚠️ Performance Warnings
-When thresholds are exceeded, styled warnings are logged:
+When performance thresholds are exceeded, you'll see styled console warnings:
 
 ```text
-[ReduxPerf] Slow Action: lab/generateLargeState took 65.30ms
-[ReduxPerf] Slow Selector: selectHeavyItems took 22.45ms
-[ReduxPerf] High Memory Warning: Store size is 14.04MB (Threshold: 10MB)
+[ReduxPerf] Slow Action: cart/addItem took 12.3ms
+[ReduxPerf] Slow Selector: selectExpensiveComputation took 8.7ms
+[ReduxPerf] High Memory Warning: Store size is 15.2MB (Threshold: 10MB)
 ```
 
-### 📊 Performance Summary
-Call `perfAnalytics.logSummary()` to get a detailed breakdown of your Redux performance:
+### Analytics Dashboard
+
+Call `perfAnalytics.logSummary()` to see detailed performance breakdowns:
 
 ```text
 [ReduxPerf] Performance Summary
 
 --- Top 10 Most Triggered Actions ---
-┌───────────┬────────────────────────────┬───────┬─────────┬─────────┬─────────┐
-│ (index)   │ name                       │ count │ avg     │ max     │ total   │
-├───────────┼────────────────────────────┼───────┼─────────┼─────────┼─────────┤
-│ 0         │ 'lab/incrementDispatch...' │ 100   │ '0.05ms'│ '0.21ms'│ '5.42ms'│
-│ 1         │ 'lab/toggleSlowSelector'   │ 2     │ '0.12ms'│ '0.18ms'│ '0.24ms'│
-└───────────┴────────────────────────────┴───────┴─────────┴─────────┴─────────┘
+┌─────────┬──────────────────────┬───────┬─────────┬─────────┬──────────┐
+│ (index) │ name                 │ count │ avg     │ max     │ total    │
+├─────────┼──────────────────────┼───────┼─────────┼─────────┼──────────┤
+│ 0       │ 'cart/addItem'       │ 247   │ '0.3ms' │ '12.3ms'│ '74.1ms' │
+│ 1       │ 'user/updateProfile' │ 18    │ '1.2ms' │ '3.4ms' │ '21.6ms' │
+└─────────┴──────────────────────┴───────┴─────────┴─────────┴──────────┘
 
 --- Top 10 Slowest Selectors (Max Duration) ---
-┌───────────┬────────────────────┬───────┬──────────┬──────────┬──────────┐
-│ (index)   │ name               │ count │ avg      │ max      │ total    │
-├───────────┼────────────────────┼───────┼──────────┼──────────┼──────────┤
-│ 0         │ 'selectHeavyItems' │ 5     │ '21.15ms'│ '23.40ms'│ '105.7ms'│
-└───────────┴────────────────────┴───────┴──────────┴──────────┴──────────┘
+┌─────────┬────────────────────────────┬───────┬─────────┬─────────┬──────────┐
+│ (index) │ name                       │ count │ avg     │ max     │ total    │
+├─────────┼────────────────────────────┼───────┼─────────┼─────────┼──────────┤
+│ 0       │ 'selectExpensiveCompute'   │ 42    │ '6.2ms' │ '8.7ms' │ '260.4ms'│
+│ 1       │ 'selectFilteredProducts'   │ 156   │ '0.8ms' │ '2.1ms' │ '124.8ms'│
+└─────────┴────────────────────────────┴───────┴─────────┴─────────┴──────────┘
+
+--- Top 10 Heaviest Selectors (Cumulative Time) ---
+┌─────────┬────────────────────────────┬───────┬─────────┬─────────┬──────────┐
+│ (index) │ name                       │ count │ avg     │ max     │ total    │
+├─────────┼────────────────────────────┼───────┼─────────┼─────────┼──────────┤
+│ 0       │ 'selectExpensiveCompute'   │ 42    │ '6.2ms' │ '8.7ms' │ '260.4ms'│
+│ 1       │ 'selectFilteredProducts'   │ 156   │ '0.8ms' │ '2.1ms' │ '124.8ms'│
+└─────────┴────────────────────────────┴───────┴─────────┴─────────┴──────────┘
 ```
 
 ---
 
 ## ⚙️ Configuration
 
-Control the toolkit behavior at runtime:
+Customize thresholds and behavior:
 
 ```typescript
 import { setPerfOptions } from '@dynlabs/redux-perf-core';
 
 setPerfOptions({
   selectorTrackingEnabled: true,
-  slowSelectorThreshold: 5,           // ms
-  storeSizeTrackingEnabled: true,     // New!
-  maxStoreSizeThreshold: 10           // MB (Warns if exceeded)
+  slowSelectorThreshold: 5,           // Log warning if selector takes > 5ms
+  storeSizeTrackingEnabled: true,
+  maxStoreSizeThreshold: 10           // Log warning if store exceeds 10MB
 });
 ```
 
 ---
 
-## 📚 Detailed Documentation
+## 🏗️ Architecture
 
-For a deep dive into how each technical component works, check out our specialized guides:
+### Monorepo Structure
 
-- 🏎️ [Action Profiling](docs/actions.md): How we measure reducer execution time.
-- 🎯 [Selector Tracking](docs/selectors.md): Deep dive into recomputation detection and dependency tracking.
-- 📦 [Store Size Measurement](docs/store-size.md): How we track memory footprint and state bloat.
-- 🤖 [AI Integration Prompt](docs/integration-prompt.md): Use this prompt to let an AI assistant do the integration for you!
+```
+redux-perf-toolkit/
+├── packages/
+│   ├── core/              # Pure TS monitoring engine
+│   └── vite-plugin/       # Build-time instrumentation
+├── examples/
+│   └── stress-test/       # Performance Lab demo
+└── docs/                  # Technical deep-dives
+```
 
----
+### How It Works
 
-## 🏗️ Monorepo Structure
-
-- `packages/core`: Pure TypeScript performance logic and analytics engine.
-- `packages/vite-plugin`: Build-time instrumentation for automated naming.
-- `examples/stress-test`: A "Performance Lab" demo for simulating RAM, CPU, and Middleware stress.
-
----
-
-## 👷‍♂️ CI/CD
-
-This project uses **GitHub Actions** for automated builds, NPM publishing to GitHub Packages, and deployment of the Stress Test Lab to GitHub Pages.
+1. **Middleware Layer**: Intercepts every Redux action to measure reducer execution time
+2. **Selector Wrapper**: Wraps `createSelector` to track recomputations and execution time
+3. **Analytics Engine**: Aggregates metrics and provides console-based reporting
+4. **Vite Plugin**: Automatically injects selector names at build time for readable reports
 
 ---
 
-## 🤖 AI Generated Disclaimer
+## 📚 Documentation
 
-This entire repository, including the core logic, build plugins, example applications, unit tests, and documentation, was **fully generated and verified by Antigravity**, an agentic AI coding assistant. Every line of code has been autonomously implemented and tested to ensure functionality and performance.
+- 🏎️ [Action Profiling](docs/actions.md) - How we measure reducer execution time
+- 🎯 [Selector Tracking](docs/selectors.md) - Deep dive into recomputation detection
+- 📦 [Store Size Measurement](docs/store-size.md) - Memory footprint tracking
+- 🤖 [AI Integration Prompt](docs/integration-prompt.md) - Let AI integrate this for you
+
+---
+
+## 🎬 Live Demo
+
+Try the **Performance Lab** at [https://dienp.github.io/redux-perf-toolkit/](https://dienp.github.io/redux-perf-toolkit/)
+
+Simulate slow selectors, action storms, and memory bloat to see the toolkit in action.
+
+---
+
+## 🤖 AI-Generated
+
+This entire repository—including core logic, build plugins, unit tests, and documentation—was **fully generated and verified by Antigravity**, an agentic AI coding assistant.
 
 ---
 
 ## 📄 License
-ISC © 2025 [dienp](https://github.com/dienp)
 
+ISC © 2025 [dienp](https://github.com/dienp)
