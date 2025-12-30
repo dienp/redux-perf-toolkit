@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Typography, Stack, Card, CardContent, Divider, Chip, Alert } from '@mui/material';
 import type { RootState, AppDispatch } from '../store';
 import { generateLargeState, clearLargeState, toggleSlowSelector, incrementDispatchStorm } from '../features/lab/labSlice';
-import { perfAnalytics } from '@ptdien/redux-perf-core';
+import { perfAnalytics } from '@dynlabs/redux-perf-core';
 
 export const PerformanceLab: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();

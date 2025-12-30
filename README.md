@@ -6,7 +6,7 @@ A powerful, developer-centric toolkit designed to **track, measure, and optimize
 
 ## 🏗️ Pure TypeScript & Platform Agnostic
 
-The `@ptdien/redux-perf-core` package has been completely revamped to be dependency-free (no React/React Native required). It works seamlessly in:
+The `@dynlabs/redux-perf-core` package has been completely revamped to be dependency-free (no React/React Native required). It works seamlessly in:
 - 🌐 **Web** (React, Vue, Angular, Vanilla)
 - 🖥️ **Node.js** (Server-side Redux)
 - 📱 **Mobile** (React Native, Expo)
@@ -32,13 +32,13 @@ The `@ptdien/redux-perf-core` package has been completely revamped to be depende
 To use the core performance tracking logic:
 
 ```bash
-npm install @ptdien/redux-perf-core
+npm install @dynlabs/redux-perf-core
 ```
 
 To enable **Automated Naming** in Vite projects:
 
 ```bash
-npm install @ptdien/redux-perf-vite-plugin
+npm install @dynlabs/redux-perf-vite-plugin
 ```
 
 ---
@@ -49,7 +49,7 @@ npm install @ptdien/redux-perf-vite-plugin
 Enable automated selector naming in your `vite.config.ts`:
 
 ```typescript
-import { reduxPerfPlugin } from '@ptdien/redux-perf-vite-plugin';
+import { reduxPerfPlugin } from '@dynlabs/redux-perf-vite-plugin';
 
 export default defineConfig({
   plugins: [
@@ -63,7 +63,7 @@ Add the performance middleware to your Redux store:
 
 ```typescript
 import { configureStore } from '@reduxjs/toolkit';
-import { createPerfMiddleware } from '@ptdien/redux-perf-core';
+import { createPerfMiddleware } from '@dynlabs/redux-perf-core';
 
 export const store = configureStore({
   reducer: rootReducer,
@@ -76,7 +76,7 @@ Swap your imports to use the performance-aware `createSelector`.
 
 ```typescript
 // After (Drop-in replacement with auto-tracking!)
-import { createSelector } from '@ptdien/redux-perf-core';
+import { createSelector } from '@dynlabs/redux-perf-core';
 
 export const selectFilteredItems = createSelector(
   [selectItems, selectFilter],
@@ -86,7 +86,7 @@ export const selectFilteredItems = createSelector(
 
 ### 4. View Analytics
 ```typescript
-import { perfAnalytics } from '@ptdien/redux-perf-core';
+import { perfAnalytics } from '@dynlabs/redux-perf-core';
 
 // Log the Top 10 tables to console
 perfAnalytics.logSummary();
@@ -141,7 +141,7 @@ Call `perfAnalytics.logSummary()` to get a detailed breakdown of your Redux perf
 Control the toolkit behavior at runtime:
 
 ```typescript
-import { setPerfOptions } from '@ptdien/redux-perf-core';
+import { setPerfOptions } from '@dynlabs/redux-perf-core';
 
 setPerfOptions({
   selectorTrackingEnabled: true,

@@ -1,5 +1,5 @@
 {
-    "name": "@ptdien/redux-perf-vite-plugin",
+    "name": "@dynlabs/redux-perf-vite-plugin",
     "version": "1.1.0",
     "publishConfig": {
         "access": "public"
