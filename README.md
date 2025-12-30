@@ -118,6 +118,16 @@ setPerfOptions({
 
 ---
 
+## 📚 Detailed Documentation
+
+For a deep dive into how each technical component works, check out our specialized guides:
+
+- 🏎️ [Action Profiling](docs/actions.md): How we measure reducer execution time.
+- 🎯 [Selector Tracking](docs/selectors.md): Deep dive into recomputation detection and dependency tracking.
+- 📦 [Store Size Measurement](docs/store-size.md): How we track memory footprint and state bloat.
+
+---
+
 ## 🏗️ Monorepo Structure
 
 - `packages/core`: Pure TypeScript performance logic and analytics engine.
