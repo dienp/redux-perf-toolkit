@@ -31,6 +31,12 @@ jobs:
       - name: Build Packages
         run: npm run build --workspaces --if-present
 
+      - name: Publish to NPM
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npm publish --workspaces --if-present
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Build Example App
         run: |
           cd examples/stress-test
@@ -43,18 +49,16 @@ jobs:
           folder: examples/stress-test/dist
           branch: gh-pages
 
-      - name: Publish to NPM
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: npm publish --workspaces --if-present
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Create Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1.0-${{ github.run_number }}
-          name: Release v1.1.0 (Build ${{ github.run_number }})
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          name: Release v${{ steps.get_version.outputs.VERSION }}
           draft: false
           prerelease: false
           generate_release_notes: true
