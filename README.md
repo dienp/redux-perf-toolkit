@@ -85,8 +85,6 @@ export const selectFilteredItems = createSelector(
 ```
 
 ### 4. View Analytics
-Since the toolkit is now UI-agnostic, you can view your performance summary directly in the console:
-
 ```typescript
 import { perfAnalytics } from '@dienp/redux-perf-core';
 
@@ -97,6 +95,43 @@ perfAnalytics.logSummary();
 perfAnalytics.stopTracking();
 perfAnalytics.reset();
 perfAnalytics.startTracking();
+```
+
+---
+
+## 🖥️ Console Output Examples
+
+The toolkit provides high-visibility console outputs to help you identify bottlenecks instantly.
+
+### ⚠️ Performance Warnings
+When thresholds are exceeded, styled warnings are logged:
+
+```text
+[ReduxPerf] Slow Action: lab/generateLargeState took 65.30ms
+[ReduxPerf] Slow Selector: selectHeavyItems took 22.45ms
+[ReduxPerf] High Memory Warning: Store size is 14.04MB (Threshold: 10MB)
+```
+
+### 📊 Performance Summary
+Call `perfAnalytics.logSummary()` to get a detailed breakdown of your Redux performance:
+
+```text
+[ReduxPerf] Performance Summary
+
+--- Top 10 Most Triggered Actions ---
+┌───────────┬────────────────────────────┬───────┬─────────┬─────────┬─────────┐
+│ (index)   │ name                       │ count │ avg     │ max     │ total   │
+├───────────┼────────────────────────────┼───────┼─────────┼─────────┼─────────┤
+│ 0         │ 'lab/incrementDispatch...' │ 100   │ '0.05ms'│ '0.21ms'│ '5.42ms'│
+│ 1         │ 'lab/toggleSlowSelector'   │ 2     │ '0.12ms'│ '0.18ms'│ '0.24ms'│
+└───────────┴────────────────────────────┴───────┴─────────┴─────────┴─────────┘
+
+--- Top 10 Slowest Selectors (Max Duration) ---
+┌───────────┬────────────────────┬───────┬──────────┬──────────┬──────────┐
+│ (index)   │ name               │ count │ avg      │ max      │ total    │
+├───────────┼────────────────────┼───────┼──────────┼──────────┼──────────┤
+│ 0         │ 'selectHeavyItems' │ 5     │ '21.15ms'│ '23.40ms'│ '105.7ms'│
+└───────────┴────────────────────┴───────┴──────────┴──────────┴──────────┘
 ```
 
 ---
