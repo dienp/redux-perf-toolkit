@@ -5,19 +5,19 @@ import presetTypescript from '@babel/preset-typescript';
 
 export interface ReduxPerfPluginOptions {
     /**
-     * Set to true to automatically rewrite 'reselect' imports to '@dienp/redux-perf-core'.
+     * Set to true to automatically rewrite 'reselect' imports to '@ptdien/redux-perf-core'.
      * @default true
      */
     rewriteReselect?: boolean;
     /**
-     * The path to resolve '@dienp/redux-perf-core' to.
-     * @default '@dienp/redux-perf-core'
+     * The path to resolve '@ptdien/redux-perf-core' to.
+     * @default '@ptdien/redux-perf-core'
      */
     corePath?: string;
 }
 
 export function reduxPerfPlugin(options: ReduxPerfPluginOptions = {}): any {
-    const { rewriteReselect = true, corePath = '@dienp/redux-perf-core' } = options;
+    const { rewriteReselect = true, corePath = '@ptdien/redux-perf-core' } = options;
 
     return {
         name: 'vite-plugin-redux-perf',

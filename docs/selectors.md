@@ -4,7 +4,7 @@ The Redux Performance Toolkit provides a drop-in replacement for `reselect`'s `c
 
 ## How it Works
 
-The `createSelector` utility from `@dienp/redux-perf-core` wraps the standard `reselect` logic with a custom memoizer that tracks execution metrics.
+The `createSelector` utility from `@ptdien/redux-perf-core` wraps the standard `reselect` logic with a custom memoizer that tracks execution metrics.
 
 ### 1. Instrumentation via Custom Memoizer
 Instead of just wrapping the result function, we inject a custom memoizer using `createSelectorCreator`. This allows us to intercept every execution of the selector and compare current arguments with the previous ones.

@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import heavyReducer from './features/heavy/heavySlice';
 import stockReducer from './features/stock/stockSlice';
 import labReducer from './features/lab/labSlice';
-import { createPerfMiddleware } from '@dienp/redux-perf-core';
+import { createPerfMiddleware } from '@ptdien/redux-perf-core';
 
 export const store = configureStore({
     reducer: {

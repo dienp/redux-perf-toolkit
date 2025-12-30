@@ -20,7 +20,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // Direct alias to the core package source (Vite will handle TS transformation)
-      '@dienp/redux-perf-core': path.resolve(__dirname, '../../packages/core/src/index.ts')
+      '@ptdien/redux-perf-core': path.resolve(__dirname, '../../packages/core/src/index.ts')
     }
   }
 })
