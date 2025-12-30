@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: NPM_TOKEN
     permissions:
       contents: write
       packages: write
