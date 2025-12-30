@@ -186,3 +186,4 @@ This entire repository, including the core logic, build plugins, example applica
 
 ## 📄 License
 ISC © 2025 [dienp](https://github.com/dienp)
+
