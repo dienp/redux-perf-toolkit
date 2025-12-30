@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { updateItemValue, shuffleItems, type HeavyItem } from '../features/heavy/heavySlice';
-import { useRenderTracker } from '@dienp/redux-perf-core';
 import {
     Box,
     Button,
@@ -63,8 +62,6 @@ export const HeavyList: React.FC = () => {
     // Pass the filter to the selector
     // Note: We use an arrow function to pass the 'filter' arg to the selector
     const items = useSelector((state: RootState) => selectFilteredHeavyItems(state, filter)) as HeavyItem[];
-
-    useRenderTracker('HeavyList');
 
     // Intentionally inefficient rendering
     return (

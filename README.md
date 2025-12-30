@@ -1,28 +1,29 @@
 # 🚀 Redux Performance Toolkit
 
-A powerful, developer-centric toolkit designed to **track, measure, and optimize** Redux application performance with zero-config automated naming.
+A powerful, developer-centric toolkit designed to **track, measure, and optimize** Redux application performance with zero-config automated naming. Now 100% pure TypeScript and platform-agnostic.
 
 ---
 
-## 📺 Live Demo
+## 🏗️ Pure TypeScript & Platform Agnostic
 
-Watch the Redux Performance Toolkit in action, automatically identifying slow selectors and providing real-time insights:
-
-![Redux Performance Dashboard Demo](assets/demo.webp)
+The `@dienp/redux-perf-core` package has been completely revamped to be dependency-free (no React/React Native required). It works seamlessly in:
+- 🌐 **Web** (React, Vue, Angular, Vanilla)
+- 🖥️ **Node.js** (Server-side Redux)
+- 📱 **Mobile** (React Native, Expo)
 
 ---
 
 ## ✨ Key Features
 
 - 🏎️ **Action Profiling**: Track exactly how long each reducer takes to process actions.
-- 🎯 **Seamless Selector Tracking**: Drop-in `createSelector` replacement that automatically detects:
-    - **Execution Time**
-    - **Cache Misses vs Hits**
-    - **Invalidating Dependency Index** (Know exactly *which* input caused the recomputation!)
-- 🏷️ **Automated Naming**: Variable names (e.g., `const selectUser = createSelector(...)`) are automatically captured using a build-time Vite plugin. No manual naming required!
-- 📊 **Real-time Dashboard**: A sleek MUI-based overlay to monitor your slowest actions and selectors in real-time.
-- 📱 **Cross-Platform**: Support for both **Web** (React) and **React Native**.
-- 🛠️ **Developer Experience**: Styled console warnings for "Slow Selectors" and "Slow Actions" that exceed your defined thresholds.
+- 🎯 **Seamless Selector Tracking**: Drop-in `createSelector` replacement that automatically detects execution time and cache hits/misses.
+- 📦 **Store Size Measurement**: Real-time tracking of your Redux state size with configurable high-RAM warnings.
+- 📊 **Console Analytics**: A powerful analytics engine reachable via `perfAnalytics.logSummary()`, providing Top 10 reporting for:
+    - Most triggered actions/selectors
+    - Slowest operations (Max duration)
+    - Heaviest operations (Cumulative time)
+- 🏷️ **Automated Naming**: Variable names are automatically captured using a build-time Vite plugin.
+- ⏹️ **On-Demand Control**: Start, stop, or reset tracking at any time to focus on specific user flows.
 
 ---
 
@@ -38,12 +39,6 @@ To enable **Automated Naming** in Vite projects:
 
 ```bash
 npm install @dienp/redux-perf-vite-plugin
-```
-
-For React Native applications:
-
-```bash
-npm install @dienp/redux-perf-react-native
 ```
 
 ---
@@ -80,9 +75,6 @@ export const store = configureStore({
 Swap your imports to use the performance-aware `createSelector`.
 
 ```typescript
-// Before
-import { createSelector } from 'reselect';
-
 // After (Drop-in replacement with auto-tracking!)
 import { createSelector } from '@dienp/redux-perf-core';
 
@@ -92,20 +84,19 @@ export const selectFilteredItems = createSelector(
 );
 ```
 
-### 4. Mount the Dashboard
-Add the debugging UI to your root component:
+### 4. View Analytics
+Since the toolkit is now UI-agnostic, you can view your performance summary directly in the console:
 
-```tsx
-import { PerfDashboard } from '@dienp/redux-perf-core';
+```typescript
+import { perfAnalytics } from '@dienp/redux-perf-core';
 
-function App() {
-  return (
-    <>
-      <MyApplication />
-      {process.env.NODE_ENV === 'development' && <PerfDashboard />}
-    </>
-  );
-}
+// Log the Top 10 tables to console
+perfAnalytics.logSummary();
+
+// Manage tracking on-demand
+perfAnalytics.stopTracking();
+perfAnalytics.reset();
+perfAnalytics.startTracking();
 ```
 
 ---
@@ -119,7 +110,9 @@ import { setPerfOptions } from '@dienp/redux-perf-core';
 
 setPerfOptions({
   selectorTrackingEnabled: true,
-  slowSelectorThreshold: 5, // ms (Logs a styled warning if exceeded)
+  slowSelectorThreshold: 5,           // ms
+  storeSizeTrackingEnabled: true,     // New!
+  maxStoreSizeThreshold: 10           // MB (Warns if exceeded)
 });
 ```
 
@@ -127,20 +120,15 @@ setPerfOptions({
 
 ## 🏗️ Monorepo Structure
 
-- `packages/core`: The core performance logic, EventBus, and Web dashboard.
-- `packages/vite-plugin`: Build-time instrumentation for automated selector naming.
-- `packages/react-native`: Specialized UI components for mobile performance tracking.
-- `examples/stress-test`: A heavy implementation demo with 10,000+ items and artificial delays to test the toolkit.
+- `packages/core`: Pure TypeScript performance logic and analytics engine.
+- `packages/vite-plugin`: Build-time instrumentation for automated naming.
+- `examples/stress-test`: A "Performance Lab" demo for simulating RAM, CPU, and Middleware stress.
 
 ---
 
 ## 👷‍♂️ CI/CD
 
-This project uses **GitHub Actions** for:
-- 🏗️ **Automated Builds** on every push.
-- 📦 **NPM Publishing** to GitHub Packages.
-- 🚀 **GitHub Pages** deployment for the stress-test demo.
-- 🏷️ **Automated Releases** with unique version tags.
+This project uses **GitHub Actions** for automated builds, NPM publishing to GitHub Packages, and deployment of the Stress Test Lab to GitHub Pages.
 
 ---
 

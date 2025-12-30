@@ -26,8 +26,14 @@ export function reduxPerfPlugin(options: ReduxPerfPluginOptions = {}): any {
         // Rewrite imports from 'reselect' to corePath
         resolveId(source: string, importer: string | undefined) {
             if (rewriteReselect && source === 'reselect') {
-                // Avoid rewriting if we are already inside the core package
-                if (importer && (importer.includes('packages/core') || importer.includes('packages\\core') || importer.includes('redux-perf-core'))) {
+                // Only rewrite if the importer is NOT in node_modules
+                // and NOT already inside the core package
+                if (importer && (
+                    importer.includes('node_modules') ||
+                    importer.includes('packages/core') ||
+                    importer.includes('packages\\core') ||
+                    importer.includes('redux-perf-core')
+                )) {
                     return null;
                 }
                 return corePath;
@@ -37,6 +43,10 @@ export function reduxPerfPlugin(options: ReduxPerfPluginOptions = {}): any {
 
         // Instrument createSelector calls using Babel
         transform(code: string, id: string) {
+            if (id.includes('node_modules')) {
+                return null;
+            }
+
             if (!id.endsWith('.ts') && !id.endsWith('.tsx') && !id.endsWith('.js') && !id.endsWith('.jsx')) {
                 return null;
             }
