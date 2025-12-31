@@ -2,8 +2,11 @@
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
-  push:
+  # Runs after the CI/CD workflow completes
+  workflow_run:
+    workflows: ["CI/CD"]
+    types:
+      - completed
     branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
