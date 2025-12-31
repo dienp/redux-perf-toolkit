@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, Typography, Stack, Card, CardContent, Divider, Chip, Alert } from '@mui/material';
+import { Box, Button, Typography, Stack, Card, CardContent, Divider, Chip, Alert, Snackbar } from '@mui/material';
 import type { RootState, AppDispatch } from '../store';
 import { generateLargeState, clearLargeState, toggleSlowSelector, incrementDispatchStorm } from '../features/lab/labSlice';
 import { perfAnalytics } from '@dynlabs/redux-perf-core';
@@ -8,6 +8,11 @@ import { perfAnalytics } from '@dynlabs/redux-perf-core';
 export const PerformanceLab: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { dummyData, slowSelectorActive } = useSelector((state: RootState) => state.lab);
+    const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string; severity: 'success' | 'info' | 'warning' }>({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
 
     // Simulated slow selector
     const processedData = useSelector((state: RootState) => {
@@ -21,10 +26,25 @@ export const PerformanceLab: React.FC = () => {
         return `Processed ${state.lab.dummyData.length} items`;
     });
 
+    const showNotification = (message: string, severity: 'success' | 'info' | 'warning' = 'success') => {
+        setSnackbar({ open: true, message, severity });
+    };
+
     const handleDispatchStorm = () => {
         for (let i = 0; i < 100; i++) {
             dispatch(incrementDispatchStorm());
         }
+        showNotification('Dispatched 100 actions! Check console for performance metrics.', 'success');
+    };
+
+    const handleGenerateState = (mb: number) => {
+        dispatch(generateLargeState(mb));
+        showNotification(`Added ${mb}MB to store. Check console for memory warnings.`, 'info');
+    };
+
+    const handleClearState = () => {
+        dispatch(clearLargeState());
+        showNotification('Store cleared!', 'success');
     };
 
     const stateSizeMB = useMemo(() => {
@@ -37,126 +57,196 @@ export const PerformanceLab: React.FC = () => {
     const toggleTracking = () => {
         if (perfAnalytics.getIsTracking()) {
             perfAnalytics.stopTracking();
+            showNotification('Performance tracking paused', 'info');
         } else {
             perfAnalytics.startTracking();
+            showNotification('Performance tracking resumed', 'success');
         }
         setTrackingStatus(perfAnalytics.getIsTracking());
     };
 
     const handleReset = () => {
         perfAnalytics.reset();
-        // Force re-render to reflect potentially cleared data in the view if needed,
-        // though currently the summary is console-only.
+        showNotification('All metrics cleared!', 'success');
+    };
+
+    const handleLogSummary = () => {
+        perfAnalytics.logSummary();
+        showNotification('Performance summary logged to console!', 'success');
     };
 
     return (
-        <Card sx={{ mb: 4, border: '1px solid #444' }}>
-            <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                    <Typography variant="h5" fontWeight="bold">
-                        🧪 Performance Lab
+        <>
+            <Card sx={{ mb: 4, border: '1px solid #444' }}>
+                <CardContent>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                        <Typography variant="h5" fontWeight="bold" component="h2">
+                            🧪 Performance Lab
+                        </Typography>
+                        <Chip
+                            label={trackingStatus ? 'Tracking Active' : 'Tracking Paused'}
+                            color={trackingStatus ? 'success' : 'default'}
+                            size="small"
+                            variant="outlined"
+                            aria-label={`Performance tracking is currently ${trackingStatus ? 'active' : 'paused'}`}
+                        />
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        Use these tools to stress test Redux and view analytics in the console.
                     </Typography>
-                    <Chip
-                        label={trackingStatus ? 'Tracking Active' : 'Tracking Paused'}
-                        color={trackingStatus ? 'success' : 'default'}
-                        size="small"
-                        variant="outlined"
-                    />
-                </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Use these tools to stress test Redux and view analytics in the console.
-                </Typography>
 
-                <Divider sx={{ my: 2 }} />
+                    <Divider sx={{ my: 2 }} />
 
-                <Stack spacing={3}>
-                    <Box>
-                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                            RAM: Large State Stress
-                        </Typography>
-                        <Box sx={{ mb: 1 }}>
-                            <Typography variant="body2" component="span">
-                                Add large amounts of dummy data to the store.
+                    <Stack spacing={3}>
+                        <Box role="region" aria-labelledby="ram-stress-heading">
+                            <Typography id="ram-stress-heading" variant="subtitle1" fontWeight="bold" gutterBottom>
+                                💾 RAM: Large State Stress
                             </Typography>
-                            <Chip size="small" label={`Current: ${stateSizeMB} MB`} color={Number(stateSizeMB) > 5 ? 'error' : 'default'} sx={{ ml: 1 }} />
+                            <Box sx={{ mb: 1 }}>
+                                <Typography variant="body2" component="span">
+                                    Add large amounts of dummy data to the store.
+                                </Typography>
+                                <Chip
+                                    size="small"
+                                    label={`Current: ${stateSizeMB} MB`}
+                                    color={Number(stateSizeMB) > 5 ? 'error' : 'default'}
+                                    sx={{ ml: 1 }}
+                                    aria-label={`Current store size is ${stateSizeMB} megabytes`}
+                                />
+                            </Box>
+                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => handleGenerateState(1)}
+                                    aria-label="Add 1 megabyte of data to store"
+                                >
+                                    +1 MB
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => handleGenerateState(5)}
+                                    aria-label="Add 5 megabytes of data to store"
+                                >
+                                    +5 MB
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => handleGenerateState(10)}
+                                    aria-label="Add 10 megabytes of data to store"
+                                >
+                                    +10 MB
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={handleClearState}
+                                    aria-label="Clear all data from store"
+                                >
+                                    Clear State
+                                </Button>
+                            </Stack>
                         </Box>
-                        <Stack direction="row" spacing={1}>
-                            <Button variant="outlined" color="primary" onClick={() => dispatch(generateLargeState(1))}>+1 MB</Button>
-                            <Button variant="outlined" color="primary" onClick={() => dispatch(generateLargeState(5))}>+5 MB</Button>
-                            <Button variant="outlined" color="primary" onClick={() => dispatch(generateLargeState(10))}>+10 MB</Button>
-                            <Button variant="outlined" color="error" onClick={() => dispatch(clearLargeState())}>Clear State</Button>
+
+                        <Box role="region" aria-labelledby="cpu-stress-heading">
+                            <Typography id="cpu-stress-heading" variant="subtitle1" fontWeight="bold" gutterBottom>
+                                ⚡ CPU: Slow Selectors
+                            </Typography>
+                            <Typography variant="body2" paragraph>
+                                Toggle a selector that artificially blocks the main thread for 20ms.
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                color={slowSelectorActive ? 'error' : 'success'}
+                                onClick={() => dispatch(toggleSlowSelector())}
+                                aria-label={slowSelectorActive ? 'Disable slow selector' : 'Enable slow selector'}
+                                aria-pressed={slowSelectorActive}
+                            >
+                                {slowSelectorActive ? 'Disable Slow Selector' : 'Enable Slow Selector'}
+                            </Button>
+                            {slowSelectorActive && (
+                                <Alert severity="warning" sx={{ mt: 1 }} role="status" aria-live="polite">
+                                    Heavy workload active: {processedData}
+                                </Alert>
+                            )}
+                        </Box>
+
+                        <Box role="region" aria-labelledby="middleware-stress-heading">
+                            <Typography id="middleware-stress-heading" variant="subtitle1" fontWeight="bold" gutterBottom>
+                                🔄 Middleware: Dispatch Storm
+                            </Typography>
+                            <Typography variant="body2" paragraph>
+                                Dispatch 100 actions in a single loop to test middleware overhead.
+                            </Typography>
+                            <Button
+                                variant="outlined"
+                                color="warning"
+                                onClick={handleDispatchStorm}
+                                aria-label="Dispatch 100 actions to test middleware performance"
+                            >
+                                Run Dispatch Storm
+                            </Button>
+                        </Box>
+
+                        <Divider />
+
+                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                            <Button
+                                variant="contained"
+                                size="large"
+                                color="info"
+                                fullWidth
+                                onClick={handleLogSummary}
+                                sx={{ py: 1.5, fontWeight: 'bold' }}
+                                aria-label="Log performance summary to browser console"
+                            >
+                                📊 Log Summary
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="large"
+                                color={trackingStatus ? "error" : "success"}
+                                fullWidth
+                                onClick={toggleTracking}
+                                sx={{ py: 1.5, fontWeight: 'bold' }}
+                                aria-label={trackingStatus ? "Stop performance tracking" : "Start performance tracking"}
+                                aria-pressed={trackingStatus}
+                            >
+                                {trackingStatus ? "⏹ Stop Tracking" : "▶ Start Tracking"}
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="large"
+                                color="secondary"
+                                fullWidth
+                                onClick={handleReset}
+                                sx={{ py: 1.5, fontWeight: 'bold' }}
+                                aria-label="Reset all performance metrics"
+                            >
+                                🔄 Reset Metrics
+                            </Button>
                         </Stack>
-                    </Box>
-
-                    <Box>
-                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                            CPU: Slow Selectors
-                        </Typography>
-                        <Typography variant="body2" paragraph>
-                            Toggle a selector that artificially blocks the main thread for 20ms.
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            color={slowSelectorActive ? 'error' : 'success'}
-                            onClick={() => dispatch(toggleSlowSelector())}
-                        >
-                            {slowSelectorActive ? 'Disable Slow Selector' : 'Enable Slow Selector'}
-                        </Button>
-                        {slowSelectorActive && (
-                            <Alert severity="warning" sx={{ mt: 1 }}>
-                                Heavy workload active: {processedData}
-                            </Alert>
-                        )}
-                    </Box>
-
-                    <Box>
-                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                            Middleware: Dispatch Storm
-                        </Typography>
-                        <Typography variant="body2" paragraph>
-                            Dispatch 100 actions in a single loop to test middleware overhead.
-                        </Typography>
-                        <Button variant="outlined" color="warning" onClick={handleDispatchStorm}>
-                            Run Dispatch Storm
-                        </Button>
-                    </Box>
-
-                    <Divider />
-
-                    <Stack direction="row" spacing={2}>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            color="info"
-                            fullWidth
-                            onClick={() => perfAnalytics.logSummary()}
-                            sx={{ py: 1.5, fontWeight: 'bold' }}
-                        >
-                            📊 Log Summary
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            size="large"
-                            color={trackingStatus ? "error" : "success"}
-                            fullWidth
-                            onClick={toggleTracking}
-                            sx={{ py: 1.5, fontWeight: 'bold' }}
-                        >
-                            {trackingStatus ? "⏹ Stop Tracking" : "▶ Start Tracking"}
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            size="large"
-                            color="secondary"
-                            fullWidth
-                            onClick={handleReset}
-                            sx={{ py: 1.5, fontWeight: 'bold' }}
-                        >
-                            🔄 Reset Metrics
-                        </Button>
                     </Stack>
-                </Stack>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert
+                    onClose={() => setSnackbar({ ...snackbar, open: false })}
+                    severity={snackbar.severity}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </>
     );
 };

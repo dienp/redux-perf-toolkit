@@ -75,6 +75,7 @@ export const HeavyList: React.FC = () => {
                         variant="outlined"
                         startIcon={<ShuffleIcon />}
                         onClick={() => dispatch(shuffleItems())}
+                        aria-label="Shuffle all items to trigger global state update"
                     >
                         Shuffle (Global Update)
                     </Button>
@@ -87,9 +88,15 @@ export const HeavyList: React.FC = () => {
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
                     sx={{ mb: 2 }}
+                    inputProps={{
+                        'aria-label': 'Filter items by name'
+                    }}
                 />
 
-                <List sx={{ height: 500, overflowY: 'scroll', border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                <List
+                    sx={{ height: 500, overflowY: 'scroll', border: '1px solid #e0e0e0', borderRadius: 1 }}
+                    aria-label="Filtered list of heavy items"
+                >
                     {items.map((item, index) => ( // Filtering is now done in the selector!
                         <React.Fragment key={item.id}>
                             <ListItem
@@ -98,6 +105,7 @@ export const HeavyList: React.FC = () => {
                                         size="small"
                                         startIcon={<RefreshIcon />}
                                         onClick={() => dispatch(updateItemValue({ id: item.id, value: Math.random() * 1000 }))}
+                                        aria-label={`Update value for ${item.label}`}
                                     >
                                         Update
                                     </Button>

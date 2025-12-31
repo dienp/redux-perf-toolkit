@@ -39,12 +39,14 @@ export const StockTicker: React.FC = () => {
                         color={isRunning ? "error" : "success"}
                         startIcon={isRunning ? <StopIcon /> : <PlayArrowIcon />}
                         onClick={() => dispatch(toggleTicker())}
+                        aria-label={isRunning ? "Stop stock ticker updates" : "Start stock ticker updates"}
+                        aria-pressed={isRunning}
                     >
                         {isRunning ? 'STOP' : 'START'}
                     </Button>
                 </Box>
 
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography variant="body2" color="text.secondary" gutterBottom role="status" aria-live="polite">
                     Updates processed: <strong>{updateCount}</strong>
                 </Typography>
 
