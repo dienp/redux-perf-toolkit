@@ -28,7 +28,7 @@ export const StockTicker: React.FC = () => {
     }, [isRunning, dispatch]);
 
     return (
-        <Card sx={{ mb: 4, bgcolor: '#f5f5f5' }}>
+        <Card>
             <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Typography variant="h5" component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
